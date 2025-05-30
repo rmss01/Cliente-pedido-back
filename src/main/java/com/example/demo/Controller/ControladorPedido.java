@@ -53,14 +53,21 @@ public class ControladorPedido {
 	
 	@PutMapping("/editar")
 	public ResponseEntity<?> editar(@RequestBody Pedido p){
+		
 		if(service.buscar(p) != null) {
-			service.editar(p);
-			return ResponseEntity.status(HttpStatus.OK).body("{\"mensaje\": \"Se ha editado el pedido: " + p.getIdPedido() + ".\"}");
+			int idClienteNuevo = p.getClienteID().getIdCliente();
+			Cliente clienteNuevo = service.obtenerClienteById(idClienteNuevo);
+			if(clienteNuevo != null) {
+				service.editar(p);
+				return ResponseEntity.status(HttpStatus.OK).body("{\"mensaje\": \"Se ha editado el pedido: " + idClienteNuevo + ".\"}");
+			} else
+				return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"mensaje\": \"No existe un cliente con Id: " + idClienteNuevo + ".\"}");
+			
 		} else
 			return ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/buscar")
+	@PostMapping("/buscar")
 	public ResponseEntity<?> buscar(@RequestBody Pedido p) {
 		Pedido encontrado = service.buscar(p);
 		if(service.mostrar().isEmpty())
@@ -72,7 +79,8 @@ public class ControladorPedido {
 	}
 	
 	@DeleteMapping("/eliminar")
-	public ResponseEntity<?> eliminar(Pedido p){
+	public ResponseEntity<?> eliminar(@RequestBody Pedido p){
+		
 		service.eliminar(p);
 		return ResponseEntity.noContent().build();
 	}

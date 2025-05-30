@@ -30,6 +30,7 @@ public class ControladorCliente {
 	@GetMapping("/mostrar")
 	public ResponseEntity<?> mostrar(){
 		List<Cliente> clientes = service.mostrar();
+		//System.out.println(clientes);
 		if (clientes.isEmpty())
 			return ResponseEntity.noContent().build();
 		else
@@ -54,7 +55,7 @@ public class ControladorCliente {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("{\"mensaje\": \"No se ha modificado el cliente: " + c.getIdCliente() + " porque el cliente no existe.\"}"); //"No se ha modificado el cliente " + c.getIdCliente() + " porque el cliente no existe"
 	}
 	
-	@GetMapping("/buscar")
+	@PostMapping("/buscar")
 	public ResponseEntity<?> buscar(@RequestBody Cliente c){
 		Cliente encontrado = service.buscar(c);
 		if (encontrado != null) {
@@ -65,7 +66,9 @@ public class ControladorCliente {
 	
 	@DeleteMapping("/eliminar")
 	public ResponseEntity<?> eliminar(@RequestBody Cliente c){
-		service.eliminar(c);
+		Cliente encontrado = service.buscar(c);
+		//System.out.println(encontrado.getLista());
+		service.eliminar(encontrado);
 		return ResponseEntity.noContent().build();
 	}
 	
